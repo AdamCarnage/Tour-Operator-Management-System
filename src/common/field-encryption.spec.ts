@@ -1,3 +1,4 @@
+import { describe, expect, it } from '@jest/globals';
 import { decryptField, encryptField, maskSecret } from './field-encryption';
 
 describe('field encryption', () => {

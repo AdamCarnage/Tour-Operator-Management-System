@@ -1,3 +1,4 @@
+import { describe, expect, it } from '@jest/globals';
 import { calculateParkFees } from './park-fees';
 
 describe('park fees', () => {

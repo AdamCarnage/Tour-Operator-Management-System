@@ -1,3 +1,4 @@
+import { describe, expect, it } from '@jest/globals';
 import { isValidRange, rangesOverlap } from './schedule-conflict';
 
 describe('schedule conflict', () => {

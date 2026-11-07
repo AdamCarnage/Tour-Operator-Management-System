@@ -1,3 +1,4 @@
+import { describe, expect, it } from '@jest/globals';
 import { hashPassword, verifyPassword } from './password.hasher';
 
 describe('password hasher', () => {

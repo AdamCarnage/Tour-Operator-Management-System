@@ -1,3 +1,4 @@
+import { describe, expect, it } from '@jest/globals';
 import { parseEnv } from './env.schema';
 
 describe('parseEnv', () => {

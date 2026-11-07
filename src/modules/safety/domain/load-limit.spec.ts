@@ -1,3 +1,4 @@
+import { describe, expect, it } from '@jest/globals';
 import { loadWithinLimit, MAX_PORTER_LOAD_KG } from './load-limit';
 
 describe('load limit', () => {
