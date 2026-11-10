@@ -6,6 +6,9 @@ describe('parseEnv', () => {
     const env = parseEnv({});
     expect(env.PORT).toBe(3000);
     expect(env.DB_SYNCHRONIZE).toBe(true);
+    expect(env.DB_NAME).toBe('Toms');
+    expect(env.DB_PORT).toBe(5432);
+    expect(env.DATABASE_URL).toBeUndefined();
     expect(env.NODE_ENV).toBe('development');
   });
 

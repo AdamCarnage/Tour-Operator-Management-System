@@ -17,10 +17,15 @@ export const envSchema = z.object({
     (value) => (value === undefined || value === '' ? 3000 : value),
     z.coerce.number().int().positive(),
   ),
-  DATABASE_URL: z
-    .string()
-    .min(1)
-    .default('postgres://postgres:postgres@localhost:5432/tour_management'),
+  DB_HOST: z.string().min(1).default('localhost'),
+  DB_PORT: z.preprocess(
+    (value) => (value === undefined || value === '' ? 5432 : value),
+    z.coerce.number().int().positive(),
+  ),
+  DB_NAME: z.string().min(1).default('Toms'),
+  DB_USER: z.string().min(1).default('postgres'),
+  DB_PASS: z.string().default('postgres'),
+  DATABASE_URL: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
   DB_SYNCHRONIZE: z.preprocess(
     (value) => (value === undefined || value === '' ? 'true' : value),
     z.enum(['true', 'false']).transform((value) => value === 'true'),
