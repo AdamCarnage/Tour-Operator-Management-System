@@ -60,6 +60,14 @@ export class ProductsController {
     return this.catalog.updateProduct(user, productId, dto);
   }
 
+  @Get(':productId/templates')
+  listTemplates(
+    @CurrentUser() user: AuthUser,
+    @Param('productId', ParseUUIDPipe) productId: string,
+  ) {
+    return this.catalog.listTemplates(user.organizationId, productId);
+  }
+
   @Post(':productId/templates')
   createTemplate(
     @CurrentUser() user: AuthUser,

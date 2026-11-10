@@ -47,6 +47,14 @@ export class SuppliersService {
     return findOwned(this.suppliers, organizationId, id, 'Supplier');
   }
 
+  async listProperties(organizationId: string, supplierId: string) {
+    await this.get(organizationId, supplierId);
+    return this.properties.find({
+      where: { organizationId, supplierId },
+      order: { createdAt: 'DESC' },
+    });
+  }
+
   create(user: AuthUser, dto: CreateSupplierDto) {
     return this.suppliers.save(
       this.suppliers.create({

@@ -3,17 +3,19 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import type { AuthUser } from '../../../common/auth-user';
-import { RoleName } from '../../../common/enums';
+import { ORGANIZATION_ROLE_NAMES, RoleName } from '../../../common/enums';
 import { isDatabaseConflict } from '../../../common/errors';
-import { findOwned, paginate } from '../../../common/pagination';
+import { findOwned, pageWindow, paginate } from '../../../common/pagination';
 import { ROLE_PERMISSIONS } from '../domain/permissions';
 import { Organization, Role, User } from '../infrastructure/identity.entities';
 import { hashPassword } from '../infrastructure/password.hasher';
 import type { CreateUserDto, UpdateUserDto } from '../api/identity.dto';
+import { toUserResponse } from './identity.mapper';
 
 @Injectable()
 export class UsersService {
@@ -54,19 +56,70 @@ export class UsersService {
     return paginate(this.users, organizationId, page, limit);
   }
 
+  async listForActor(actor: AuthUser, page?: number, limit?: number) {
+    if (actor.role === RoleName.PlatformAdmin) {
+      return this.listAll(page, limit);
+    }
+    const pageResult = await this.list(actor.organizationId, page, limit);
+    return {
+      ...pageResult,
+      data: pageResult.data.map((user) => toUserResponse(user)),
+    };
+  }
+
+  async listAll(page?: number, limit?: number) {
+    const window = pageWindow(page, limit);
+    const [rows, total] = await this.users.findAndCount({
+      order: { createdAt: 'DESC' },
+      skip: window.skip,
+      take: window.limit,
+    });
+    const organizationIds = [...new Set(rows.map((row) => row.organizationId))];
+    const organizations =
+      organizationIds.length === 0
+        ? []
+        : await this.organizations.find({
+            where: { id: In(organizationIds) },
+          });
+    const byId = new Map(
+      organizations.map((organization) => [organization.id, organization]),
+    );
+    return {
+      data: rows.map((user) =>
+        toUserResponse(user, byId.get(user.organizationId) ?? null),
+      ),
+      meta: { page: window.page, limit: window.limit, total },
+    };
+  }
+
   get(organizationId: string, id: string) {
     return findOwned(this.users, organizationId, id, 'User');
+  }
+
+  async getForActor(actor: AuthUser, id: string) {
+    if (actor.role === RoleName.PlatformAdmin) {
+      const user = await this.users.findOne({ where: { id } });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      return user;
+    }
+    return this.get(actor.organizationId, id);
   }
 
   getOrganization(organizationId: string) {
     return this.organizations.findOneByOrFail({ id: organizationId });
   }
 
-  listRoles(organizationId: string) {
-    return this.roles.find({
+  async listRoles(organizationId: string, actor?: AuthUser) {
+    const rows = await this.roles.find({
       where: { organizationId },
       order: { name: 'ASC' },
     });
+    if (actor?.role === RoleName.PlatformAdmin) {
+      return rows;
+    }
+    return rows.filter((role) => role.name !== RoleName.PlatformAdmin);
   }
 
   async create(actor: AuthUser, dto: CreateUserDto) {
@@ -93,7 +146,10 @@ export class UsersService {
   }
 
   async update(actor: AuthUser, id: string, dto: UpdateUserDto) {
-    const user = await this.get(actor.organizationId, id);
+    const user = await this.getForActor(actor, id);
+    if (user.role === RoleName.PlatformAdmin && actor.role !== RoleName.PlatformAdmin) {
+      throw new ForbiddenException('Platform admin accounts cannot be changed here');
+    }
     if (dto.role) {
       this.assertCanGrant(actor, dto.role);
     }
@@ -119,7 +175,7 @@ export class UsersService {
     managerRoles: Repository<Role>,
     organizationId: string,
   ): Promise<void> {
-    const rows = Object.values(RoleName).map((name) =>
+    const rows = ORGANIZATION_ROLE_NAMES.map((name) =>
       managerRoles.create({
         organizationId,
         name,
@@ -130,7 +186,16 @@ export class UsersService {
   }
 
   private assertCanGrant(actor: AuthUser, role: RoleName) {
-    if (role === RoleName.Owner && actor.role !== RoleName.Owner) {
+    if (role === RoleName.PlatformAdmin) {
+      throw new ForbiddenException(
+        'The platform admin role cannot be granted from an organization',
+      );
+    }
+    if (
+      role === RoleName.Owner &&
+      actor.role !== RoleName.Owner &&
+      actor.role !== RoleName.PlatformAdmin
+    ) {
       throw new ForbiddenException('Only an owner can grant the owner role');
     }
   }

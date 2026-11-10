@@ -2,76 +2,76 @@ import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsEmail,
-  IsEnum,
+  IsIn,
   IsOptional,
   IsString,
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { RoleName } from '../../../common/enums';
+import { ORGANIZATION_ROLE_NAMES, RoleName } from '../../../common/enums';
 import { PageQueryDto } from '../../../common/page-query.dto';
 
 export class RegisterDto {
   @IsString()
   @MinLength(2)
   @MaxLength(160)
-  organizationName: string;
+  organizationName!: string;
 
   @IsEmail()
   @MaxLength(320)
-  email: string;
+  email!: string;
 
   @IsString()
   @MinLength(8)
   @MaxLength(128)
-  password: string;
+  password!: string;
 
   @IsString()
   @MinLength(1)
   @MaxLength(80)
-  firstName: string;
+  firstName!: string;
 
   @IsString()
   @MinLength(1)
   @MaxLength(80)
-  lastName: string;
+  lastName!: string;
 }
 
 export class LoginDto {
   @IsEmail()
-  email: string;
+  email!: string;
 
   @IsString()
   @MinLength(8)
   @MaxLength(128)
-  password: string;
+  password!: string;
 }
 
 export class RefreshDto {
   @IsString()
   @MinLength(20)
-  refreshToken: string;
+  refreshToken!: string;
 }
 
 export class CreateUserDto {
   @IsEmail()
-  email: string;
+  email!: string;
 
   @IsString()
   @MinLength(8)
   @MaxLength(128)
-  password: string;
+  password!: string;
 
   @IsString()
   @MaxLength(80)
-  firstName: string;
+  firstName!: string;
 
   @IsString()
   @MaxLength(80)
-  lastName: string;
+  lastName!: string;
 
-  @IsEnum(RoleName)
-  role: RoleName;
+  @IsIn(ORGANIZATION_ROLE_NAMES)
+  role!: RoleName;
 }
 
 export class UpdateUserDto {
@@ -86,7 +86,7 @@ export class UpdateUserDto {
   lastName?: string;
 
   @IsOptional()
-  @IsEnum(RoleName)
+  @IsIn(ORGANIZATION_ROLE_NAMES)
   role?: RoleName;
 
   @IsOptional()

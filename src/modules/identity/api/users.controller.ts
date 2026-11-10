@@ -24,13 +24,8 @@ export class UsersController {
   constructor(private readonly users: UsersService) {}
 
   @Get()
-  async list(@CurrentUser() user: AuthUser, @Query() query: UserQueryDto) {
-    const page = await this.users.list(
-      user.organizationId,
-      query.page,
-      query.limit,
-    );
-    return { ...page, data: page.data.map(toUserResponse) };
+  list(@CurrentUser() user: AuthUser, @Query() query: UserQueryDto) {
+    return this.users.listForActor(user, query.page, query.limit);
   }
 
   @Get(':id')
@@ -38,7 +33,7 @@ export class UsersController {
     @CurrentUser() user: AuthUser,
     @Param('id', ParseUUIDPipe) id: string,
   ) {
-    return toUserResponse(await this.users.get(user.organizationId, id));
+    return toUserResponse(await this.users.getForActor(user, id));
   }
 
   @Post()
@@ -64,7 +59,7 @@ export class RolesController {
 
   @Get()
   list(@CurrentUser() user: AuthUser) {
-    return this.users.listRoles(user.organizationId);
+    return this.users.listRoles(user.organizationId, user);
   }
 }
 

@@ -34,7 +34,7 @@ import {
 
 @ApiTags('Admin')
 @ApiBearerAuth()
-@Roles(RoleName.Owner)
+@Roles(RoleName.PlatformAdmin)
 @Controller()
 export class AdminController {
   constructor(

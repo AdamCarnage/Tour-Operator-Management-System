@@ -1,4 +1,5 @@
 export const RoleName = {
+  PlatformAdmin: 'platform_admin',
   Owner: 'owner',
   Admin: 'admin',
   Sales: 'sales',
@@ -9,6 +10,10 @@ export const RoleName = {
 } as const;
 export type RoleName = (typeof RoleName)[keyof typeof RoleName];
 export const ROLE_NAMES = Object.values(RoleName);
+/** Roles seeded for operator organizations (excludes platform admin). */
+export const ORGANIZATION_ROLE_NAMES = ROLE_NAMES.filter(
+  (role) => role !== RoleName.PlatformAdmin,
+);
 
 export const ProductKind = {
   Tour: 'tour',

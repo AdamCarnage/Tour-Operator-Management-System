@@ -10,7 +10,10 @@ export function toOrganizationResponse(organization: Organization) {
   };
 }
 
-export function toUserResponse(user: User) {
+export function toUserResponse(
+  user: User,
+  organization?: Pick<Organization, 'id' | 'name' | 'slug'> | null,
+) {
   return {
     id: user.id,
     organizationId: user.organizationId,
@@ -21,5 +24,14 @@ export function toUserResponse(user: User) {
     active: user.active,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
+    ...(organization
+      ? {
+          organization: {
+            id: organization.id,
+            name: organization.name,
+            slug: organization.slug,
+          },
+        }
+      : {}),
   };
 }

@@ -48,7 +48,21 @@ export class RolesGuard {
     if (!user) {
       return false;
     }
-    if (user.role === RoleName.Owner || user.role === RoleName.Admin) {
+    // Platform-only endpoints are never opened by org owner/admin bypass.
+    if (
+      required?.length === 1 &&
+      required[0] === RoleName.PlatformAdmin
+    ) {
+      if (user.role !== RoleName.PlatformAdmin) {
+        throw new ForbiddenException('Platform admin access required');
+      }
+      return true;
+    }
+    if (
+      user.role === RoleName.PlatformAdmin ||
+      user.role === RoleName.Owner ||
+      user.role === RoleName.Admin
+    ) {
       return true;
     }
     if (!required || required.length === 0) {

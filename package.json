@@ -24,7 +24,8 @@
     "migration:run": "npm run typeorm -- migration:run -d src/database/data-source.ts",
     "migrations:run": "npm run migration:run",
     "migration:revert": "npm run typeorm -- migration:revert -d src/database/data-source.ts",
-    "migration:show": "npm run typeorm -- migration:show -d src/database/data-source.ts"
+    "migration:show": "npm run typeorm -- migration:show -d src/database/data-source.ts",
+    "seed:platform-admin": "TS_NODE_PROJECT=tsconfig.migrations.json ts-node src/database/seed-platform-admin.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1164.0",

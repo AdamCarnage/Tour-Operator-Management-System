@@ -47,6 +47,14 @@ export class SuppliersController {
     return this.suppliers.get(user.organizationId, id);
   }
 
+  @Get(':id/properties')
+  listProperties(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.suppliers.listProperties(user.organizationId, id);
+  }
+
   @Post(':id/properties')
   createProperty(
     @CurrentUser() user: AuthUser,

@@ -1,6 +1,7 @@
 import type { RoleName } from '../../../common/enums';
 
 export const ROLE_PERMISSIONS: Record<RoleName, readonly string[]> = {
+  platform_admin: ['*'],
   owner: ['*'],
   admin: ['*'],
   sales: ['catalog', 'crm', 'quotes', 'bookings', 'portal'],

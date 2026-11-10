@@ -61,6 +61,14 @@ export class CatalogService {
     return this.products.save(product);
   }
 
+  async listTemplates(organizationId: string, productId: string) {
+    await this.getProduct(organizationId, productId);
+    return this.templates.find({
+      where: { organizationId, productId },
+      order: { createdAt: 'DESC' },
+    });
+  }
+
   async createTemplate(
     user: AuthUser,
     productId: string,
