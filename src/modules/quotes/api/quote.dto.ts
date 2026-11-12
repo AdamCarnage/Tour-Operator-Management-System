@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import {
+  IsEnum,
   IsInt,
   IsOptional,
   IsString,
@@ -8,6 +9,7 @@ import {
   MaxLength,
   Min,
 } from 'class-validator';
+import { BookingSource } from '../../../common/enums';
 import { IsCurrencyCode, IsIsoDate } from '../../../common/validators';
 
 export class CreateQuoteDto {
@@ -105,4 +107,9 @@ export class AcceptQuoteDto {
 
   @IsIsoDate()
   endDate: string;
+
+  /** Defaults to office (desk-recorded). Website bookings omit the recorder. */
+  @IsOptional()
+  @IsEnum(BookingSource)
+  source?: BookingSource;
 }

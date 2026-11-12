@@ -6,7 +6,12 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import type { AuthUser } from '../../../common/auth-user';
-import { BookingStatus, LeadStatus, QuoteStatus } from '../../../common/enums';
+import {
+  BookingSource,
+  BookingStatus,
+  LeadStatus,
+  QuoteStatus,
+} from '../../../common/enums';
 import { findOwned, paginate } from '../../../common/pagination';
 import { AuditService } from '../../admin/application/audit.service';
 import { WebhooksService } from '../../admin/application/admin.services';
@@ -307,12 +312,16 @@ export class QuotesService {
       );
       quote.status = QuoteStatus.Accepted;
       await manager.save(quote);
+      const source = dto.source ?? BookingSource.Office;
       const booking = await manager.save(
         manager.create(Booking, {
           organizationId: user.organizationId,
           quoteId: quote.id,
           customerId: quote.customerId,
           status: BookingStatus.Pending,
+          source,
+          recordedByUserId:
+            source === BookingSource.Office ? user.userId : null,
           currency: quote.currency,
           fxRate: version.fxRate,
           totalCostMinor: version.totalCostMinor,

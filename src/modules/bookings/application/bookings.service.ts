@@ -166,6 +166,7 @@ export class BookingsService {
         method: dto.method,
         status,
         reference: dto.reference ?? '',
+        recordedByUserId: user.userId,
         paidAt: status === PaymentStatus.Received ? new Date() : null,
       }),
     );

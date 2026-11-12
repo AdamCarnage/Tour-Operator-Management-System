@@ -1,6 +1,7 @@
 import { Column, Entity, Index } from 'typeorm';
 import { TenantEntity } from '../../../common/base.entity';
 import {
+  BookingSource,
   BookingStatus,
   InvoiceStatus,
   PaymentMethod,
@@ -20,6 +21,13 @@ export class Booking extends TenantEntity {
 
   @Column({ type: 'varchar', length: 32, default: BookingStatus.Pending })
   status: BookingStatus;
+
+  @Column({ type: 'varchar', length: 32, default: BookingSource.Office })
+  source: BookingSource;
+
+  @Index()
+  @Column({ type: 'uuid', nullable: true })
+  recordedByUserId: string | null;
 
   @Column({ type: 'varchar', length: 3 })
   currency: string;
@@ -96,6 +104,10 @@ export class Payment extends TenantEntity {
 
   @Column({ type: 'varchar', length: 120, default: '' })
   reference: string;
+
+  @Index()
+  @Column({ type: 'uuid', nullable: true })
+  recordedByUserId: string | null;
 
   @Column({ type: 'timestamptz', nullable: true })
   paidAt: Date | null;

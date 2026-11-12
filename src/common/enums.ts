@@ -57,6 +57,12 @@ export const BookingStatus = {
 } as const;
 export type BookingStatus = (typeof BookingStatus)[keyof typeof BookingStatus];
 
+export const BookingSource = {
+  Office: 'office',
+  Website: 'website',
+} as const;
+export type BookingSource = (typeof BookingSource)[keyof typeof BookingSource];
+
 export const PaymentMethod = {
   Card: 'card',
   MobileMoney: 'mobile_money',
@@ -64,6 +70,46 @@ export const PaymentMethod = {
   Cash: 'cash',
 } as const;
 export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod];
+
+export const ConversationChannel = {
+  InternalStaff: 'internal_staff',
+  ExternalPlatform: 'external_platform',
+} as const;
+export type ConversationChannel =
+  (typeof ConversationChannel)[keyof typeof ConversationChannel];
+
+export const MessageSenderType = {
+  User: 'user',
+  External: 'external',
+  System: 'system',
+} as const;
+export type MessageSenderType =
+  (typeof MessageSenderType)[keyof typeof MessageSenderType];
+
+export const EmailFolder = {
+  Inbox: 'inbox',
+  Sent: 'sent',
+  Important: 'important',
+  Draft: 'draft',
+  Trash: 'trash',
+} as const;
+export type EmailFolder = (typeof EmailFolder)[keyof typeof EmailFolder];
+
+export const EmailCategory = {
+  Work: 'work',
+  Private: 'private',
+  Support: 'support',
+  Social: 'social',
+  General: 'general',
+} as const;
+export type EmailCategory = (typeof EmailCategory)[keyof typeof EmailCategory];
+
+export const CalendarItemKind = {
+  Task: 'task',
+  Event: 'event',
+} as const;
+export type CalendarItemKind =
+  (typeof CalendarItemKind)[keyof typeof CalendarItemKind];
 
 export const PaymentStatus = {
   Pending: 'pending',
